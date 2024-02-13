@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  envoy:
+    build: ./envoy
+    ports:
+      - "8080:8080"
+    networks:
+      - proxy_network
+
+  backend:
+    build: ./go_backend
+    ports:
+      - "8081:8081"
+    networks:
+      - proxy_network
+
+networks:
+  proxy_network:
+    driver: bridge
