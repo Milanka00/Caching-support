@@ -25,6 +25,20 @@ static_resources:
                 http_filters:
                   - name: envoy.filters.http.router
 
+  # clusters:
+  #   - name: backend
+  #     connect_timeout: 0.25s
+  #     type: static
+  #     lb_policy: round_robin
+  #     load_assignment:
+  #       cluster_name: backend
+  #       endpoints:
+  #         - lb_endpoints:
+  #             - endpoint:
+  #                 address:
+  #                   socket_address:
+  #                     address: 172.17.0.1
+  #                     port_value: 8081
   clusters:
     - name: backend
       connect_timeout: 0.25s
@@ -37,5 +51,5 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: 172.17.0.1
-                      port_value: 8081
+                      address: 172.22.0.4
+                      port_value: 8082
