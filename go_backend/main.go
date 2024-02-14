@@ -28,5 +28,5 @@ func main() {
  router := gin.Default()
  router.GET("/albums",getAlbums)
 
- router.Run("localhost:8081")
+ router.Run("0.0.0.0:8081")
 }
