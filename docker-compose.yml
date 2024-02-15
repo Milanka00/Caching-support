@@ -1,12 +1,12 @@
 version: "3.8"
 
 services:
-  # envoy:
-  #   build: ./envoy
-  #   ports:
-  #     - "8082:8082"
-  #   networks:
-  #     - proxy_network
+  envoy:
+    build: ./envoy
+    ports:
+      - "10000:10000"
+    networks:
+      - proxy_network
 
   backend:
     build: ./go_backend
