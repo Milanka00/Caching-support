@@ -1,20 +1,32 @@
 # default.vcl
 
-vcl 4.1;
+vcl 4.0;
 
 backend default {
-    .host = "backend";
+    .host = "backend";   //actual backend ip
     .port = "8081";
 }
 
 sub vcl_recv {
-    if (req.url == "/albums") {
+       if (req.url ~ "^/albums") {
         return (hash);
     }
 }
 
 sub vcl_backend_response {
-    if (bereq.url == "/albums") {
-        set beresp.ttl = 1m;  # Set cache TTL to 1 min
+    if (beresp.status == 200 && bereq.url ~ "^/albums") {
+        set beresp.ttl = 60s;
+    }
+    if (bereq.url ~ "^/albums") {
+        if (beresp.status != 200) {
+            set beresp.http.x-error = "Backend returned " + beresp.status;
+            return (abandon);
+        }
+        if (beresp.ttl <= 0s ||
+            beresp.http.Set-Cookie ||
+            beresp.http.Vary == "*") {
+            set beresp.ttl = 15s;
+            return (deliver);
+        }
     }
 }
