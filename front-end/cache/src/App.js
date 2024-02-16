@@ -7,9 +7,11 @@ function App() {
     async function fetchAlbums() {
       const response = await fetch('http://localhost:10000/albums');
       const data = await response.json();
+      console.log('Cache-Control:', response.headers.get('Cache-Control'));
       setAlbums(data);
     }
     fetchAlbums();
+    
   }, []);
 
   return (
