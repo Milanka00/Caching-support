@@ -30,3 +30,9 @@ sub vcl_backend_response {
         }
     }
 }
+
+sub vcl_deliver {
+    if (req.url ~ "^/albums") {
+        set resp.http.Cache-Control = "public, max-age=3600"; 
+    }
+}
