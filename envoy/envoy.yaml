@@ -24,7 +24,14 @@ static_resources:
                             timeout: 0s
                 http_filters:
                   - name: envoy.filters.http.router
-
+                  - name: envoy.filters.http.header_manipulation
+                    typed_config:
+                      "@type" : type.googleapis.com/envoy.extentions.filters.http.header_manipulation.v3.HeaderManipulation
+                       request_headers_to_add:
+                          -header:
+                              key: "Cache-Control"
+                              value: "max-age=3600"
+# lua filters are alternative way of manipulating HTTP headers
   # clusters:
   #   - name: backend
   #     connect_timeout: 0.25s
