@@ -3,9 +3,11 @@
 vcl 4.0;
 
 backend default {
-    .host = "backend";   //actual backend ip
-    .port = "8081";
+    .host = "hitch";
+    .port = "443"; // Hitch listens on the same port that HTTPS clients connect to
+    .ssl = 1; // Enable SSL,TLS for the backend connection
 }
+
 
 sub vcl_recv {
        if (req.url ~ "^/albums") {

@@ -21,6 +21,13 @@ services:
       - "8080:80"
     networks:
       - proxy_network
+  
+  hitch:
+    image: your-hitch-image
+    volumes:
+      - /path/to/server.pem:/etc/hitch/server.pem
+    networks:
+      - proxy_network
 
 networks:
   proxy_network:

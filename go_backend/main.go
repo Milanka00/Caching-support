@@ -31,7 +31,8 @@ func main() {
  
  router.GET("/albums",getAlbums)
 
- router.Run("0.0.0.0:8081")
+  // Run HTTPS server with provided SSL certificate and key
+  router.RunTLS("0.0.0.0:8081", "server.crt", "server.key")
 }
 
 func corsMiddleware() gin.HandlerFunc {
