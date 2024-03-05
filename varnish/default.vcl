@@ -1,5 +1,3 @@
-# default.vcl
-
 vcl 4.0;
 
 backend default {
@@ -8,31 +6,24 @@ backend default {
 }
 
 sub vcl_recv {
-       if (req.url ~ "^/albums") {
-        return (hash);
-    }
+    # Perform hash lookup for any request
+    return (hash);
 }
 
 sub vcl_backend_response {
-    if (beresp.status == 200 && bereq.url ~ "^/albums") {
-        set beresp.ttl = 60s;
+    # Check if there is a Cache-Control header in the backend response
+    if (beresp.http.Cache-Control) {
+        # If Cache-Control header is present, we don't override it
+        return (deliver);
     }
-    if (bereq.url ~ "^/albums") {
-        if (beresp.status != 200) {
-            set beresp.http.x-error = "Backend returned " + beresp.status;
-            return (abandon);
-        }
-        if (beresp.ttl <= 0s ||
-            beresp.http.Set-Cookie ||
-            beresp.http.Vary == "*") {
-            set beresp.ttl = 15s;
-            return (deliver);
-        }
-    }
+    
+    # If there's no Cache-Control header, set default TTL
+    set beresp.ttl = 60s;
 }
 
 sub vcl_deliver {
-    if (req.url ~ "^/albums") {
-        set resp.http.Cache-Control = "public, max-age=3600"; 
+    # Optionally, set default cache control headers for responses
+    if (!resp.http.Cache-Control) {
+        set resp.http.Cache-Control = "public, max-age=3600";
     }
 }

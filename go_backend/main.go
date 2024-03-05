@@ -24,12 +24,32 @@ func getAlbums(c *gin.Context) {
 		c.IndentedJSON(http.StatusOK,albums)
 }
 
+func getPublic(c *gin.Context) {
+    // Set cache control headers for the /albums endpoint
+    c.Header("Cache-Control", "public, max-age=3600") // Cache response for 1 hour
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+        "message": "This is a response cached with public",
+    })
+}
+
+func getNostore(c *gin.Context) {
+    // Set cache control headers for the other endpoint
+    c.Header("Cache-Control", "no-store") // Do not cache response
+
+    c.IndentedJSON(http.StatusOK, gin.H{
+        "message": "This is not cached",
+    })
+}
+
 func main() {
  router := gin.Default()
 
  router.Use(corsMiddleware())
  
  router.GET("/albums",getAlbums)
+ router.GET("/public",getPublic)
+ router.GET("/nostore",getNostore)
 
  router.Run("0.0.0.0:8081")
 }

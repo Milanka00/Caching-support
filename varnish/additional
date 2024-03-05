@@ -1,0 +1,33 @@
+vcl 4.0;
+
+backend default {
+    .host = "backend";   //actual backend ip
+    .port = "8081";
+}
+
+sub vcl_backend_response {
+    # Check if there is a Cache-Control header in the backend response
+    if (beresp.http.Cache-Control) {
+        # If Cache-Control header is present, we don't override it
+        return (deliver);
+    }
+    
+    # If there's no Cache-Control header, you can set your default TTL here
+    set beresp.ttl = 60s;
+}
+
+sub vcl_deliver {
+    # Optionally, you can set default cache control headers for responses
+    # This is useful if your backend doesn't provide any cache control headers
+    if (!resp.http.Cache-Control) {
+        set resp.http.Cache-Control = "public, max-age=3600";
+    }
+}
+------------------------------------------------
+In the vcl_backend_response subroutine, it checks if the backend response contains a Cache-Control header. If such a header is present, it doesn't override it and lets the response pass through to delivery (return (deliver)). This ensures that Varnish respects the cache directives provided by the backend.
+
+If there's no Cache-Control header in the backend response, you can set your default TTL as required. This ensures that responses without cache control headers are cached for a default duration (set beresp.ttl = 60s;).
+
+In the vcl_deliver subroutine, you can optionally set default cache control headers for responses if your backend doesn't provide any. This ensures consistent caching behavior even for responses without cache control headers.
+
+This setup allows Varnish to respect cache control directives provided by the backend while still providing fallback options for responses without explicit cache control headers.
