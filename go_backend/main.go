@@ -1,70 +1,80 @@
 package main
 
 import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
+    "fmt"
+    "net/http"
+    "os"
+    "strconv"
+    "sync"
+    "time"
 )
 
-type album struct {
-	ID     string  `json:"id"`
-	Title  string  `json:"title"`
-	Artist string  `json:"artist"`
-	Price  float64 `json:"price"`
-}
-
-var albums = []album{
-	{ID: "1", Title: "Blue train", Artist: "john Coltrane", Price: 56.99},
-	{ID: "2", Title: "Jeru", Artist: "Gerry Mulligan", Price: 18.99},
-	{ID: "3", Title: "Clifford Brown", Artist: "Sarah Vaughan", Price: 58.99},
-}
-
-// response in jason format
-func getAlbums(c *gin.Context) {
-		c.IndentedJSON(http.StatusOK,albums)
-}
-
-func getPublic(c *gin.Context) {
-    // Set cache control headers for the /albums endpoint
-    c.Header("Cache-Control", "public, max-age=3600") // Cache response for 1 hour
-
-	c.IndentedJSON(http.StatusOK, gin.H{
-        "message": "This is a response cached with public",
-    })
-}
-
-func getNostore(c *gin.Context) {
-    // Set cache control headers for the other endpoint
-    c.Header("Cache-Control", "no-store") // Do not cache response
-
-    c.IndentedJSON(http.StatusOK, gin.H{
-        "message": "This is not cached",
-    })
-}
+var payload []byte
+var once sync.Once
 
 func main() {
- router := gin.Default()
+    
+    generatePayload()
 
- router.Use(corsMiddleware())
- 
- router.GET("/albums",getAlbums)
- router.GET("/public",getPublic)
- router.GET("/nostore",getNostore)
+   
+    http.HandleFunc("/nocache", func(w http.ResponseWriter, r *http.Request) {
+        NoCacheHandler(w, r)
+    })
+    http.HandleFunc("/publiccache", func(w http.ResponseWriter, r *http.Request) {
+        PublicCacheHandler(w, r)
+    })
+    http.HandleFunc("/privatecache", func(w http.ResponseWriter, r *http.Request) {
+        PrivateCacheHandler(w, r)
+    })
+    http.HandleFunc("/getresponse", func(w http.ResponseWriter, r *http.Request) {
+        getresponseWithoutHeaders(w, r)
+    })
 
- router.Run("0.0.0.0:8081")
+    // Start server
+    fmt.Println("Server is listening on port 8081...")
+    http.ListenAndServe(":8081", nil)
 }
 
-func corsMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		// c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000") // Allow requests from the specified origin
-		// c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		// c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
-		if c.Request.Method == http.MethodOptions {
-			c.AbortWithStatus(http.StatusOK)
-			return
-		}
+func NoCacheHandler(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Cache-Control", "no-store")
+    w.Write(payload)
+    sleepBeforeRespond()
+}
 
-		c.Next()
-	}
+
+func PublicCacheHandler(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Cache-Control", "public, max-age=3600")
+    w.Write(payload)
+    sleepBeforeRespond()
+}
+
+
+func PrivateCacheHandler(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Cache-Control", "private, max-age=3600")
+    w.Write(payload)
+    sleepBeforeRespond()
+}
+
+func getresponseWithoutHeaders(w http.ResponseWriter, r *http.Request) {
+    w.Write(payload)
+    sleepBeforeRespond()
+}
+
+func sleepBeforeRespond() {
+    sleepTimeStr := os.Getenv("SLEEP_TIME")
+    sleepTime, err := strconv.Atoi(sleepTimeStr)
+    if err != nil {
+        sleepTime = 15
+    }
+    time.Sleep(time.Duration(sleepTime) * time.Second)
+}
+
+func generatePayload() {
+    once.Do(func() {
+        payload = make([]byte, 100)
+        for i := range payload {
+            payload[i] = 'x'
+        }
+    })
 }
