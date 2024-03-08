@@ -22,3 +22,11 @@ sub vcl_init {
 sub vcl_recv {
     set req.backend_hint = vdir.backend();
 }
+
+sub vcl_backend_response {
+# Don't cache 404 responses
+if ( beresp.status == 404 ) {
+set beresp.uncacheable = true;
+return (deliver);
+}
+}
