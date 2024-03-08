@@ -24,12 +24,12 @@ func main() {
         PublicCacheHandler(w, r)
     })
    
-    http.HandleFunc("/getresponse", func(w http.ResponseWriter, r *http.Request) {
+    http.HandleFunc("/mila/getresponse", func(w http.ResponseWriter, r *http.Request) {
         getresponseWithoutHeaders(w, r)
     })
 
     // Start server
-    fmt.Println("Server is listening on port 8081...")
+    fmt.Println("Server is listening on port 8082...")
     http.ListenAndServe(":8082", nil)
 }
 
