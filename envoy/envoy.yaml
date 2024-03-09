@@ -23,6 +23,19 @@ static_resources:
                             cluster: backend_cluster
                             timeout: 0s
                 http_filters:
+                  - name: envoy.filters.http.lua
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+                      inline_code: |
+                        function envoy_on_request(request_handle)
+                          if request_handle:headers():get(":path") == "/getresponse" then
+                            request_handle:headers():replace("host", "backend")
+                            request_handle:logInfo("set host for path: /getresponse ")
+                          elseif request_handle:headers():get(":path") == "/getsecondresponse" then
+                            request_handle:headers():replace("host", "second_backend")
+                             request_handle:logInfo("set host for path: /getsecondresponse ")
+                          end
+                        end
                   - name: envoy.filters.http.router
                   
 # lua filters are alternative way of manipulating HTTP headers

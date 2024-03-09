@@ -24,7 +24,7 @@ func main() {
         PublicCacheHandler(w, r)
     })
    
-    http.HandleFunc("/mila/getresponse", func(w http.ResponseWriter, r *http.Request) {
+    http.HandleFunc("/getsecondresponse", func(w http.ResponseWriter, r *http.Request) {
         getresponseWithoutHeaders(w, r)
     })
 
