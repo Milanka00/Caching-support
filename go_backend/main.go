@@ -46,6 +46,8 @@ func NoCacheHandler(w http.ResponseWriter, r *http.Request) {
 func PublicCacheHandler(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Cache-Control", "public, max-age=3600")
     w.Write(payload)
+    additionalContent := []byte("cached as public")
+    w.Write(additionalContent)
     sleepBeforeRespond()
 }
 
