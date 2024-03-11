@@ -1,6 +1,7 @@
 vcl 4.1;
 
 import directors;
+import std;
 
 backend backend1 {
     .host = "backend";
@@ -21,6 +22,9 @@ sub vcl_init {
 
 sub vcl_recv {
     set req.backend_hint = vdir.backend();
+    std.log("Host header received: " + req.http.Host);
+    
+    
 }
 
 sub vcl_backend_response {
@@ -29,4 +33,11 @@ if ( beresp.status == 404 ) {
 set beresp.uncacheable = true;
 return (deliver);
 }
+}
+
+sub vcl_deliver {
+    if (obj.hits > 0) {
+        set resp.http.X-Cache-Host = req.http.Host;
+        set resp.http.X-Cache-Info = "Cached under host: " + req.http.Host + "; Request URI: " + req.url;
+    }
 }
