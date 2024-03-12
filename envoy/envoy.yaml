@@ -30,10 +30,10 @@ static_resources:
                         function envoy_on_request(request_handle)
                           if request_handle:headers():get(":path") == "/getresponse" then
                             request_handle:headers():replace("host", "backend")
-                            # request_handle:logInfo("set host for path: /getresponse ")
+                            
                           elseif request_handle:headers():get(":path") == "/getsecondresponse" then
                             request_handle:headers():replace("host", "second_backend")
-                            #  request_handle:logInfo("set host for path: /getsecondresponse ")
+                           
                           end
                         end
                   - name: envoy.filters.http.router

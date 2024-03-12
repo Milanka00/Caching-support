@@ -20,7 +20,7 @@ func main() {
     http.HandleFunc("/nocache", func(w http.ResponseWriter, r *http.Request) {
         NoCacheHandler(w, r)
     })
-    http.HandleFunc("/publiccache", func(w http.ResponseWriter, r *http.Request) {
+    http.HandleFunc("/publicsecondcache", func(w http.ResponseWriter, r *http.Request) {
         PublicCacheHandler(w, r)
     })
    

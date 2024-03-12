@@ -6,6 +6,8 @@ import std;
 backend backend1 {
     .host = "backend";
     .port = "8081";
+    .connect_timeout = 20s; 
+    
 }
 
 backend backend2 {
@@ -27,13 +29,19 @@ sub vcl_recv {
     
 }
 
-sub vcl_backend_response {
-# Don't cache 404 responses
-if ( beresp.status == 404 ) {
-set beresp.uncacheable = true;
-return (deliver);
+sub vcl_backend_fetch {
+ if (bereq.method == "GET") {
+ unset bereq.body;
+ }
+ return (fetch);
 }
-}
+
+ sub vcl_backend_response {
+ # Don't cache 404 responses
+ if ( beresp.status == 404 ) {
+ set beresp.uncacheable = true;
+ }
+ }
 
 sub vcl_deliver {
     if (obj.hits > 0) {
