@@ -7,41 +7,31 @@ backend backend1 {
     .host = "backend";
     .port = "8081";
     .connect_timeout = 20s; 
-    
-}
-
-backend backend2 {
-    .host = "second_backend";
-    .port = "8082";
 }
 
 sub vcl_init {
     new vdir = directors.round_robin();
     vdir.add_backend(backend1);
-    vdir.add_backend(backend2);
-     
 }
 
 sub vcl_recv {
     set req.backend_hint = vdir.backend();
     # std.log("Host header received: " + req.http.Host);
-    
-    
 }
 
 sub vcl_backend_fetch {
- if (bereq.method == "GET") {
- unset bereq.body;
- }
- return (fetch);
+    if (bereq.method == "GET") {
+        unset bereq.body;
+    }
+    return (fetch);
 }
 
- sub vcl_backend_response {
- # Don't cache 404 responses
- if ( beresp.status == 404 ) {
- set beresp.uncacheable = true;
- }
- }
+sub vcl_backend_response {
+    # Don't cache 404 responses
+    if (beresp.status == 404) {
+        set beresp.uncacheable = true;
+    }
+}
 
 sub vcl_deliver {
     if (obj.hits > 0) {
