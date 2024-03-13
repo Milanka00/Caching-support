@@ -7,6 +7,11 @@ services:
       - "10000:10000"
     networks:
       - proxy_network
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "500M"  # 500 MB
 
   backend:
     build: ./go_backend
@@ -14,13 +19,11 @@ services:
       - "8081:8081"
     networks:
       - proxy_network
-  
-  second_backend:
-    build: ./go_backend2
-    ports:
-      - "8082:8082"
-    networks:
-      - proxy_network
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "1G"  # 1 GB
 
   varnish:
     build: ./varnish
@@ -28,6 +31,11 @@ services:
       - "8080:80"
     networks:
       - proxy_network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "500M"  # 500 MB
 
 networks:
   proxy_network:
