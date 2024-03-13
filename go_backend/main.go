@@ -39,7 +39,7 @@ func main() {
 func NoCacheHandler(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Cache-Control", "no-store")
     w.Write(payload)
-    sleepBeforeRespond()
+    // sleepBeforeRespond()
 }
 
 
@@ -48,19 +48,19 @@ func PublicCacheHandler(w http.ResponseWriter, r *http.Request) {
     w.Write(payload)
     additionalContent := []byte("cached as public")
     w.Write(additionalContent)
-    sleepBeforeRespond()
+    // sleepBeforeRespond()
 }
 
 
 func PrivateCacheHandler(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Cache-Control", "private, max-age=3600")
     w.Write(payload)
-    sleepBeforeRespond()
+    // sleepBeforeRespond()
 }
 
 func getresponseWithoutHeaders(w http.ResponseWriter, r *http.Request) {
     w.Write(payload)
-    sleepBeforeRespond()
+    // sleepBeforeRespond()
 }
 
 func sleepBeforeRespond() {
