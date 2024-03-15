@@ -45,7 +45,7 @@ func PublicCacheHandler(w http.ResponseWriter, r *http.Request) {
 func generatePayloads() {
 	once.Do(func() {
 		payloads = make(map[int][]byte)
-		for i := 1; i <= 10; i++ {
+		for i := 1; i <= 20; i++ {
 			payload := make([]byte, 100)
 			for j := range payload {
 				payload[j] = 'x'
