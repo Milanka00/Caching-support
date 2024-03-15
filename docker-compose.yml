@@ -14,7 +14,7 @@ services:
           memory: "500M"  # 500 MB
 
   backend:
-    build: ./go_backend
+    build: ./backend_perId
     ports:
       - "8081:8081"
     networks:

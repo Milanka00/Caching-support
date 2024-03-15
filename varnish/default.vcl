@@ -6,7 +6,7 @@ import std;
 backend backend1 {
     .host = "backend";
     .port = "8081";
-    .connect_timeout = 20s; 
+  
 }
 
 sub vcl_init {
